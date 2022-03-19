@@ -17,6 +17,9 @@ import RPi.GPIO as GPIO
 from scripts.ADCDevice import *
 from scripts.LED import LED
 from scripts.switch import Switch
+#import client 
+#ask for broker ip address
+#should have launched the broker on client side
 
 #####################
 #     VARIABLES     #

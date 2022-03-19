@@ -180,3 +180,9 @@ class MQTTClient:
 
         # Connect to Broker.
         client.connect(self.brokerHost, self.brokerHost)
+
+    def startMQTT(self):
+        signal.signal(signal.SIGINT, signal_handler)
+        print("Listening for messages on topic '" + TOPIC + "'. Press Control + C to exit.")
+        client.loop_start()
+        signal.pause()
