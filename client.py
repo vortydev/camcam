@@ -13,7 +13,7 @@ import signal
 import paho.mqtt.client as mqtt
 
 class MQTTClient:
-    __brokerHost = "localhost"
+    __brokerHost = "localhost"  # curl ifconfig.me to get public ip address
     __brokerPort = 1883
     __idClient = "Client001"
     __client = None
