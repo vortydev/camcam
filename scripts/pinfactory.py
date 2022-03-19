@@ -7,30 +7,29 @@
 ########################################################
 
 class Pin:
-    __pin = -1
+    __pinNb = -1
 
     # init pin
     def __init__(self, p = -1):
-        self.pin = p
+        self.pinNb = p
 
     # returns the pinNb
     def __repr__(self) -> int:
-        return int(self.pin)
+        return int(self.pinNb)
 
     def __str__(self) -> int:
-        return int(self.pin)
+        return int(self.pinNb)
 
     # set the pin
     def set_pin(self, p):
         self.pinCheck(p)
-        self.__pin = p
-        print("Set pin to", p)
+        self.__pinNb = p
 
     # set the pin
     def get_pin(self):
-        return self.__pin
+        return self.__pinNb
 
-    pin = property(get_pin, set_pin)
+    pinNb = property(get_pin, set_pin)
 
     # stops the program if a pin is invalid
     def pinCheck(self, p):
