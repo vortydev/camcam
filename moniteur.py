@@ -59,8 +59,8 @@ def setup():
     global fnSwitch
     pwrSwitch = Switch(pinPwrSwitch)
     fnSwitch = Switch(pinFnSwitch)
-    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING, callback=callback_pwrSwitch)
-    GPIO.add_event_detect(pinFnSwitch, GPIO.FALLING, callback=callback_fnSwitch)
+    GPIO.add_event_detect(pinPwrSwitch, GPIO.RISING, callback=callback_pwrSwitch)
+    GPIO.add_event_detect(pinFnSwitch, GPIO.RISING, callback=callback_fnSwitch)
 
     # init vibration sensor
     global sensorVibration
