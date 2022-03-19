@@ -14,11 +14,13 @@ from time import sleep
 
 import RPi.GPIO as GPIO
 
+import threading
+
 from scripts.ADCDevice import *
 from scripts.LED import LED
 from scripts.switch import Switch
-#import client 
-#ask for broker ip address
+from client import MQTTClient
+#ask for broker ip address?
 #should have launched the broker on client side
 
 #####################
@@ -43,6 +45,9 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
+mqttClient = MQTTClient("localhost",1883,"Client001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
+
+threadLoop = None
 
 #####################
 #     FONCTIONS     #
@@ -103,6 +108,8 @@ def loop():
     while (True):
         if (GPIO.event_detected(pinVibration)):
             print("vibration detected")
+            vibeJSON = {'vibe':'yes'}
+            mqttClient.publish(mqttClient.topicVibration,vibeJSON)
 
         if (GPIO.event_detected(pinPwrSwitch)):
             print("pwr switch detected")
@@ -114,6 +121,9 @@ def loop():
         print("gas value: {}".format(gasVal))
 
         sleep(0.1)
+
+def thread_loop(name):
+    loop()
 
 # cleanup sequence
 def destroy():
