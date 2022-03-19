@@ -22,18 +22,18 @@ from scripts.switch import Switch
 #####################
 
 # LEDs
-pinGreenLED = 19
-pinRedLED = 26
+pinGreenLED = 5
+pinRedLED = 6
 gLED = LED()
 rLED = LED()
 
 # switches
-pinPwrSwitch = 6
+pinPwrSwitch = 19
 pinFnSwitch = 13
 pwrSwitch = Switch()
 fnSwitch = Switch()
 
-pinVibration = 18
+pinVibration = 27
 sensorVibration = Switch()
 
 
