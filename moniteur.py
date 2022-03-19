@@ -59,26 +59,26 @@ def setup():
     global fnSwitch
     pwrSwitch = Switch(pinPwrSwitch)
     fnSwitch = Switch(pinFnSwitch)
-    GPIO.add_event_detect(pinPwrSwitch, GPIO.RISING, callback=callback_pwrSwitch)
-    GPIO.add_event_detect(pinFnSwitch, GPIO.RISING, callback=callback_fnSwitch)
+    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING)
+    GPIO.add_event_detect(pinFnSwitch, GPIO.FALLING)
 
     # init vibration sensor
     global sensorVibration
     sensorVibration = Switch(pinVibration)
-    GPIO.add_event_detect(sensorVibration.pin.pinNb, GPIO.FALLING, callback=callback_vibration)
+    GPIO.add_event_detect(sensorVibration.pin.pinNb, GPIO.FALLING)
 
     # init microphone
     # init humidity sensor
     # init gas sensor
 
-def callback_pwrSwitch(channel):
-    print("pwr button clicked")
+# def callback_pwrSwitch(channel):
+#     print("pwr button clicked")
 
-def callback_fnSwitch(channel):
-    print("fn button clicked")
+# def callback_fnSwitch(channel):
+#     print("fn button clicked")
 
-def callback_vibration(channel):
-    print("vibration switch triggered")
+# def callback_vibration(channel):
+#     print("vibration switch triggered")
 
 # main program loop
 def loop():
