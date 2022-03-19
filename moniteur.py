@@ -82,10 +82,17 @@ def callback_vibration(channel):
 
 # main program loop
 def loop():
-    print("loop!\n")
+    while (True):
+        if (GPIO.event_detected(pinVibration)):
+            print("vibration detected")
 
-    if (GPIO.event_detected(pinVibration)):
-        print("vibration detected")
+        if (GPIO.event_detected(pinPwrSwitch)):
+            print("pwr switch detected")
+
+        if (GPIO.event_detected(pinFnSwitch)):
+            print("fn switch detected")
+
+        sleep(0.1)
 
 # cleanup sequence
 def destroy():
