@@ -51,6 +51,8 @@ def setup():
     global rLED
     gLED = LED(pinGreenLED)
     rLED = LED(pinRedLED)
+    gLED.turnOff()
+    rLED.turnOn()
 
     # setup boutons
     global pwrSwitch
