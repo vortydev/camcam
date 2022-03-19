@@ -17,4 +17,5 @@ class Switch:
             self.pin = Pin(pin)
             GPIO.setmode(mode)
             GPIO.setup(self.pin, GPIO.IN, GPIO.PUD_UP)
+            print ("initiliased switch with pin {}".format(self.pin))
     
