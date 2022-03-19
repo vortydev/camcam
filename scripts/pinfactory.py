@@ -15,7 +15,7 @@ class Pin:
 
     # returns the pinNb
     def __repr__(self) -> int:
-        return self.pin
+        return int(self.pin)
 
     # set the pin
     def set_pin(self, p):
