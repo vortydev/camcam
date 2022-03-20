@@ -144,7 +144,7 @@ class MQTTClient:
         print("Disconnected from MQTT broker")
 
     def on_message(self, client, user_data, msg):
-        if(self.idClient == "Client001"):
+        if(self.idClient == "Client001"): # ajouter if id moniteur
             print("Received message for topic {}: {}".format( msg.topic, msg.payload))
             data = None
             try:
@@ -164,6 +164,20 @@ class MQTTClient:
                 print("Gaz")
             elif msg.topic == self.topicTemperature:
                 print("Temperature")
+            else:
+                print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
+        elif(self.idClient == "Moniteur001"):
+            data = None
+            try:
+                data = json.loads(msg.payload.decode("UTF-8"))
+            except json.JSONDecodeError as e:
+                print("JSON Decode Error: " + msg.payload.decode("UTF-8"))
+        
+            if msg.topic == self.topicSystem:
+                if data['system']:
+                    print('bean')# dat recu == off then offline if on thn online if reset gotta reset
+            elif msg.topic == self.topicSensor:
+                print("Tout les sensor")
             else:
                 print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
 
