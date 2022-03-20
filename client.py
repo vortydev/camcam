@@ -196,6 +196,10 @@ class MQTTClient:
         self.client.loop_start()
         signal.pause()
 
+    def stopMQTT(self):
+        client.loop_stop()
+        client.disconnect()
+
     def publish(self, topic, msg):
         self.client.publish(topic,json.dumps(msg),1)
 

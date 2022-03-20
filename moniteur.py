@@ -52,7 +52,7 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
-mqttClient = MQTTClient("localhost",1883,"Client001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
+mqttClient = MQTTClient("192.168.0.115",1883,"Moniteur001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
 
 threadLoop = None
 # dht object
@@ -237,7 +237,7 @@ def routineDHT():
 
     # dht.humidity
     # dht.temperature
-    return ({dht.humidity, dht.temperature})
+    return ({'humidity':dht.humidity, 'temperature':dht.temperature})
 
     # print("Humidity : %.2f\nTemperature : %.2f \n"%(dht.humidity,dht.temperature))
 
@@ -269,7 +269,7 @@ def loop():
             mqttClient.publish(mqttClient.topicMicrophone, {'mic':routineMic()})
             
             # DHT
-            mqttClient.publish(mqttClient.topicTemperature, {'temperature':routineDHT()[1]})
+            mqttClient.publish(mqttClient.topicTemperature, routineDHT())
         sleep(0.1)
 
 def thread_loop(name):
