@@ -127,7 +127,7 @@ def powerButton():
     trigger = timestamp + timedelta(seconds=3)
     now = datetime.now()
 
-    if (now < trigger):
+    if (now > trigger):
         if (ONLINE):
             systemOffline()
         else:
@@ -147,7 +147,7 @@ def resetButton():
         else:
             gLED.turnOff()
 
-    if (now < trigger):
+    if (now > trigger):
         if (ONLINE):
             for i in range(0, 5):
                 gLED.turnOn()
