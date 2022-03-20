@@ -112,6 +112,8 @@ def setup():
     global timestamp
     timestamp = datetime.now()
 
+    mqttClient.client.loop_start()
+
 def datetime2float(date):
     epoch = datetime.utcfromtimestamp(0)
     seconds =  (date - epoch).total_seconds()
@@ -256,7 +258,6 @@ def loop():
             powerButton()
 
         if (ONLINE):
-            mqttClient.client.loop_start()
             # vibration
             if (GPIO.event_detected(pinVibration)):
                 print("vibration detected")
@@ -271,7 +272,6 @@ def loop():
             
             # DHT
             mqttClient.publish(mqttClient.topicTemperature, routineDHT())
-            mqttClient.client.loop_stop()
         sleep(0.1)
 
 def thread_loop(name):
@@ -280,6 +280,7 @@ def thread_loop(name):
 # cleanup sequence
 def destroy():
     print("\n!\tSYSTEM CLEANUP\t!")
+    mqttClient.client.loop_stop()
     adc.close()
     GPIO.cleanup()
 

@@ -8,7 +8,7 @@
     <script type="text/javascript" charset="utf-8">
 
         const CLIENT_ID = String(Math.floor(Math.random() * 10e16))                            // (2)
-        const TOPIC   = "led";                                                                 // (3)
+        const TOPIC   = "sensor/microphone";                                                                 // (3)
 
         // Web Socket MQTT Client Object.
         const client = new Paho.Client(location.hostname, Number(location.port), CLIENT_ID);   // (4)
@@ -17,7 +17,7 @@
         onConnectionSuccess = function(data) {                                                 // (5)
             console.log("Connected to MQTT Broker");
             $("#connected").html("Yes");
-            $("input[type=range].brightnessLevel").attr("disabled", null);
+            //$("input[type=range].brightnessLevel").attr("disabled", null);
 
             // Receive LED level messages.                                                     // (6)
             client.subscribe(TOPIC);
@@ -38,7 +38,7 @@
             }
 
             $("#connected").html("No");
-            $("input[type=range].brightnessLevel").attr("disabled", "true");
+            //$("input[type=range].brightnessLevel").attr("disabled", "true");
         };
 
         // Callback when a new message arrives at a subscribed topic.
@@ -49,8 +49,8 @@
             var data = JSON.parse(message.payloadString);
 
             if (message.destinationName === TOPIC) {
-                $("input[type=range].brightnessLevel").val(data.level);
-                $("#brightnessLevel").html(data.level);
+                //$("input[type=range].brightnessLevel").val(data.level);
+                $("#microphone").html(data.mic);
             }
         }
 
@@ -60,23 +60,23 @@
             $("#clientId").html(CLIENT_ID);
 
             // Event listener for Slider value changes.
-            $("input[type=range].brightnessLevel").on('input', function() {
-                level = $(this).val();
-
-                payload = {
-                    "level": level
-                 };
-
-                // Publish LED brightness.
-                var message = new Paho.Message(                                                // (11)
-                   JSON.stringify(payload)
-                );
-
-                message.destinationName = TOPIC;                                               // (12)
-                message.qos = 2;
-                message.retained = true;                                                       // (13)
-                client.send(message);
-            });
+            //$("input[type=range].brightnessLevel").on('input', function() {
+            //    level = $(this).val();
+//
+            //    payload = {
+            //        "level": level
+            //     };
+//
+            //    // Publish LED brightness.
+            //    var message = new Paho.Message(                                                // (11)
+            //       JSON.stringify(payload)
+            //    );
+//
+            //    message.destinationName = TOPIC;                                               // (12)
+            //    message.qos = 2;
+            //    message.retained = true;                                                       // (13)
+            //    client.send(message);
+            //});
         });
     </script>
 </head>
@@ -86,7 +86,7 @@
     <br><br>
     Connected to MQTT Broker: <span id="connected">No</span>
     <br><br>
-    Brightness <span id="brightnessLevel"></span>:<br>
-    <input type="range" min="0" max="100" value="0" disabled="true" class="brightnessLevel">
+    Microphone <span id="microphone"></span>:<br>
+    
 </body>
 </html>
