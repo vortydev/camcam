@@ -144,27 +144,28 @@ class MQTTClient:
         print("Disconnected from MQTT broker")
 
     def on_message(self, client, user_data, msg):
-        print("Received message for topic {}: {}".format( msg.topic, msg.payload))
-        data = None
-        try:
-            data = json.loads(msg.payload.decode("UTF-8"))
-        except json.JSONDecodeError as e:
-            print("JSON Decode Error: " + msg.payload.decode("UTF-8"))
+        if(self.idClient == "Client001"):
+            print("Received message for topic {}: {}".format( msg.topic, msg.payload))
+            data = None
+            try:
+                data = json.loads(msg.payload.decode("UTF-8"))
+            except json.JSONDecodeError as e:
+                print("JSON Decode Error: " + msg.payload.decode("UTF-8"))
 
-        if msg.topic == self.topicSystem:
-            print("Etat du systeme")
-        elif msg.topic == self.topicSensor:
-            print("Tout les sensor")
-        elif msg.topic == self.topicVibration:
-            print("Vibration")
-        elif msg.topic == self.topicMicrophone:
-            print("Microphone")
-        elif msg.topic == self.topicGaz:
-            print("Gaz")
-        elif msg.topic == self.topicTemperature:
-            print("Temperature")
-        else:
-            print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
+            if msg.topic == self.topicSystem:
+                print("Etat du systeme")
+            elif msg.topic == self.topicSensor:
+                print("Tout les sensor")
+            elif msg.topic == self.topicVibration:
+                print("Vibration")
+            elif msg.topic == self.topicMicrophone:
+                print("Microphone")
+            elif msg.topic == self.topicGaz:
+                print("Gaz")
+            elif msg.topic == self.topicTemperature:
+                print("Temperature")
+            else:
+                print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
 
     def signal_handler(self, sig, frame):
         print("You pressed Control + C. Shutting down, please wait...")
@@ -197,8 +198,8 @@ class MQTTClient:
         signal.pause()
 
     def stopMQTT(self):
-        client.loop_stop()
-        client.disconnect()
+        self.client.loop_stop()
+        self.client.disconnect()
 
     def publish(self, topic, msg):
         self.client.publish(topic,json.dumps(msg),1)

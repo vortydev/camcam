@@ -52,7 +52,7 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
-mqttClient = MQTTClient("192.168.0.115",1883,"Moniteur001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
+mqttClient = MQTTClient("localhost",1883,"Moniteur001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
 
 threadLoop = None
 # dht object
@@ -256,6 +256,7 @@ def loop():
             powerButton()
 
         if (ONLINE):
+            mqttClient.client.loop_start()
             # vibration
             if (GPIO.event_detected(pinVibration)):
                 print("vibration detected")
@@ -270,6 +271,7 @@ def loop():
             
             # DHT
             mqttClient.publish(mqttClient.topicTemperature, routineDHT())
+            mqttClient.client.loop_stop()
         sleep(0.1)
 
 def thread_loop(name):
