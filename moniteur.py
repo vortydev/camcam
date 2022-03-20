@@ -53,7 +53,7 @@ pinVibration = 27
 sensorVibration = Switch()
 
 # mqtt Client
-mqttClient = MQTTClient("localhost",1883,"Client001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
+mqttClient = MQTTClient("localhost",1883,"Moniteur001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
 
 threadLoop = None
 # dht object
@@ -63,6 +63,7 @@ dht = DHT.DHT(0)
 # MONITEUR
 ONLINE = False
 timestamp = 0
+mqttTimer = 0
 
 #####################
 #     FONCTIONS     #
@@ -113,6 +114,10 @@ def setup():
     global timestamp
     timestamp = datetime.now()
 
+    mqttClient.client.loop_start()
+    global mqttTimer
+    mqttTimer = datetime.now()
+
 def datetime2float(date):
     epoch = datetime.utcfromtimestamp(0)
     seconds =  (date - epoch).total_seconds()
@@ -126,7 +131,7 @@ def powerButton():
     trigger = timestamp + timedelta(seconds=3)
     now = datetime.now()
 
-    if (now < trigger):
+    if (now > trigger):
         if (ONLINE):
             systemOffline()
         else:
@@ -146,7 +151,7 @@ def resetButton():
         else:
             gLED.turnOff()
 
-    if (now < trigger):
+    if (now > trigger):
         if (ONLINE):
             for i in range(0, 5):
                 gLED.turnOn()
@@ -161,15 +166,18 @@ def systemOnline():
     global ONLINE
     ONLINE = True
     rLED.turnOn()
+    mqttClient.publish(mqttClient.topicSystem,{'system':'ON'})
 
 def systemOffline():
     print("\n!\tSYSTEM OFFLINE\t!")
     global ONLINE
     ONLINE = False
     rLED.turnOff()
+    mqttClient.publish(mqttClient.topicSystem,{'system':'OFF'})
 
 def systemReset():
     print("\n!\tSYSTEM RESET\t!")
+    systemOffline()
 
     # init adc
     global adc
@@ -207,6 +215,8 @@ def systemReset():
     global timestamp
     timestamp = datetime.now()
 
+    systemOnline()
+
 # def callback_pwrSwitch(channel):
     # print("pwr button clicked")    
 
@@ -238,13 +248,14 @@ def routineDHT():
 
     # dht.humidity
     # dht.temperature
-    return ({dht.humidity, dht.temperature})
+    return ({'humidity':dht.humidity, 'temperature':dht.temperature})
 
     # print("Humidity : %.2f\nTemperature : %.2f \n"%(dht.humidity,dht.temperature))
 
 # main program loop
 def loop():
     global timestamp
+    global mqttTimer
     while (True):
         # update timestamp on btn click
         if (GPIO.event_detected(pinPwrSwitch)):    
@@ -256,21 +267,27 @@ def loop():
         if (GPIO.input(pinPwrSwitch) == 0):
             powerButton()
 
-        if (ONLINE):
-            # vibration
-            if (GPIO.event_detected(pinVibration)):
-                print("vibration detected")
-                vibeJSON = {'vibe':'yes'}
-                mqttClient.publish(mqttClient.topicVibration,vibeJSON)
-            
-            # gas
-            mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
+        if (GPIO.input(pinFnSwitch) == 0 and GPIO.input(pinPwrSwitch) == 1):
+            resetButton()
 
-            # microphone
-            mqttClient.publish(mqttClient.topicMicrophone, {'mic':routineMic()})
-            
-            # DHT
-            mqttClient.publish(mqttClient.topicTemperature, {'temperature':routineDHT()[1]})
+        if (ONLINE):
+            if (datetime.now() > mqttTimer + timedelta(seconds=10)):
+                # vibration
+                if (GPIO.event_detected(pinVibration)):
+                    print("vibration detected")
+                    vibeJSON = {'vibe':"Il y a du mouvement"}
+                    mqttClient.publish(mqttClient.topicVibration,vibeJSON)
+                else :
+                    vibeJSON = {'vibe':"Rien à signaler"}
+                    mqttClient.publish(mqttClient.topicVibration,vibeJSON)
+                # gas
+                mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
+                # microphone
+                mqttClient.publish(mqttClient.topicMicrophone, {'mic':routineMic()})
+                # DHT
+                mqttClient.publish(mqttClient.topicTemperature, routineDHT())
+                mqttTimer = datetime.now()
+
         sleep(0.1)
 
 def thread_loop(name):
@@ -279,6 +296,7 @@ def thread_loop(name):
 # cleanup sequence
 def destroy():
     print("\n!\tSYSTEM CLEANUP\t!")
+    mqttClient.client.loop_stop()
     adc.close()
     GPIO.cleanup()
 
