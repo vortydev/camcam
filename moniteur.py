@@ -266,7 +266,7 @@ def loop():
             mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
 
             # microphone
-            mqttClient.publish(mqttClient.topicMicrophone, {'gaz':routineMic()})
+            mqttClient.publish(mqttClient.topicMicrophone, {'mic':routineMic()})
             
             # DHT
             mqttClient.publish(mqttClient.topicTemperature, {'temperature':routineDHT()[1]})
