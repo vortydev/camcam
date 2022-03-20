@@ -25,7 +25,7 @@ class Pin:
         self.pinCheck(p)
         self.__pinNb = p
 
-    # set the pin
+    # get the pin
     def get_pin(self):
         return self.__pinNb
 

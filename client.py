@@ -3,10 +3,9 @@
 # Description :     Programme du Client Cam-Cam.
 # Auteurs :         Étienne Ménard, Isabelle Rioux
 # Création :        2022/04/13
-# Modification :    2022/04/20
+# Modification :    2022/05/09
 ########################################################
 
-#from camcam.scripts.alarmemosquitto import init_mqtt
 import json
 import sys
 import signal
@@ -24,6 +23,7 @@ class MQTTClient:
     __topicGaz = "sensor/gaz"
     __topicTemperature = "sensor/temperature"
 
+    # init client
     def __init__(self, brokerHost, brokerPort, idClient, topicSystem, topicSensor, topicVibration, topicMicrophone, topicGaz, topicTemperature):
         self.__brokerHost = brokerHost
         self.__brokerPort = brokerPort
@@ -127,6 +127,7 @@ class MQTTClient:
     
     topicTemperature = property(get_topicTemperature, set_topicTemperature)
 
+    # when the client connects, do this
     def on_connect(self, client, user_data, flags, connection_result_code):
         if connection_result_code == 0:
             print("Connected to MQTT Broker")
@@ -140,9 +141,11 @@ class MQTTClient:
         self.client.subscribe(self.topicGaz, qos=2)
         self.client.subscribe(self.topicTemperature, qos=2)
 
+    # when the client disconnects, do this
     def on_disconnect(self, client, user_data, disconnection_result_code):
         print("Disconnected from MQTT broker")
 
+    # when the client receives a message, do this
     def on_message(self, client, user_data, msg):
         print("Received message for topic {}: {}".format( msg.topic, msg.payload))
         data = None
@@ -166,12 +169,14 @@ class MQTTClient:
         else:
             print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
 
+    # if ctrl + c is hit, do this
     def signal_handler(self, sig, frame):
         print("You pressed Control + C. Shutting down, please wait...")
 
         self.client.disconnect()
         sys.exit(0)
 
+    # init mqtt for usage
     def init_mqtt(self):
         global client
         self.client = mqtt.Client(
@@ -190,12 +195,14 @@ class MQTTClient:
         # Connect to Broker.
         self.client.connect(self.brokerHost, self.brokerPort)
 
+    # begins to listen or to send messages
     def startMQTT(self):
         signal.signal(signal.SIGINT, self.signal_handler)
         print("Listening for messages on topic '" + self.topicSystem + "'. Press Control + C to exit.")
         self.client.loop_start()
         signal.pause()
 
+    # Publishes a message
     def publish(self, topic, msg):
         self.client.publish(topic,json.dumps(msg),1)
 

@@ -5,7 +5,7 @@
 # Description :     Programme du Moniteur Cam-Cam.
 # Auteurs :         Étienne Ménard, Isabelle Rioux
 # Création :        2022/04/13
-# Modification :    2022/04/20
+# Modification :    2022/05/09
 ########################################################
 
 ########################
@@ -52,6 +52,7 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
+# mqtt Client
 mqttClient = MQTTClient("localhost",1883,"Client001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
 
 threadLoop = None
