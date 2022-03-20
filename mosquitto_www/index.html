@@ -78,12 +78,57 @@
             }
         }
 
-
         $(document).ready(function() {                                                         // (10)
 
             $("#clientId").html(CLIENT_ID);
 
         });
+
+        function poweron(){
+            payload ={
+                "system":"SETON"
+            };
+
+            var message = new Paho.Message(                                                // (11)
+               JSON.stringify(payload)
+            );
+            
+            message.destinationName = TOPICSYSTEM;
+            message.qos = 2;
+            message.retained = true;                                                       // (13)
+            client.send(message);
+        }
+
+        function poweroff(){
+            payload ={
+                "system":"SETOFF"
+            };
+
+            var message = new Paho.Message(                                                // (11)
+               JSON.stringify(payload)
+            );
+            
+            message.destinationName = TOPICSYSTEM;
+            message.qos = 2;
+            message.retained = true;                                                       // (13)
+            client.send(message);
+        }
+
+        function reset(){
+            payload ={
+                "system":"RESET"
+            };
+
+            var message = new Paho.Message(                                                // (11)
+               JSON.stringify(payload)
+            );
+            
+            message.destinationName = TOPICSYSTEM;
+            message.qos = 2;
+            message.retained = true;                                                       // (13)
+            client.send(message);
+        }
+
     </script>
 </head>
 <body>
@@ -108,6 +153,13 @@
             <div class="flexCapteur"><p>Humidité:</p><span id="humidite">NaN</span></div>
             <div class="flexCapteur"><p>Température:</p><span id="temperature">NaN</span></div>
         </section>
+
+        <section class="buttons">
+            <button id="poweron" onclick="poweron()">ON</button>
+            <button id="poweroff" onclick="poweroff()">OFF</button>
+            <button id="reset" onclick="reset()">RESET</button>
+        </section>
+
     </main>
     
     <footer>

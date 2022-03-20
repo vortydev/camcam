@@ -164,6 +164,7 @@ def systemOnline():
     print("\n!\tSYSTEM ONLINE\t!")
     global ONLINE
     ONLINE = True
+    mqttClient.system = None
     rLED.turnOn()
     mqttClient.publish(mqttClient.topicSystem,{'system':'ON'})
 
@@ -171,13 +172,14 @@ def systemOffline():
     print("\n!\tSYSTEM OFFLINE\t!")
     global ONLINE
     ONLINE = False
+    mqttClient.system = None
     rLED.turnOff()
     mqttClient.publish(mqttClient.topicSystem,{'system':'OFF'})
 
 def systemReset():
     print("\n!\tSYSTEM RESET\t!")
     systemOffline()
-
+    mqttClient.reset = False
     # init adc
     global adc
     if (adc.detectI2C(0x4b)):
@@ -269,7 +271,16 @@ def loop():
         if (GPIO.input(pinFnSwitch) == 0 and GPIO.input(pinPwrSwitch) == 1):
             resetButton()
 
+        if (mqttClient.system and not ONLINE):
+            systemOnline()
+        elif (mqttClient.system == False and ONLINE):
+            systemOffline()
+
+        if (mqttClient.reset):
+            systemReset()
+
         if (ONLINE):
+
             if (datetime.now() > mqttTimer + timedelta(seconds=10)):
                 # vibration
                 if (GPIO.event_detected(pinVibration)):
