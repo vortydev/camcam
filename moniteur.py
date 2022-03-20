@@ -247,6 +247,7 @@ def routineMic():
 
 # read values from DHT
 def routineDHT():
+    dht.readDHT11()
     # dht.humidity
     # dht.temperature
     return ({'humidity':dht.humidity, 'temperature':dht.temperature})
