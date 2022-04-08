@@ -1,6 +1,6 @@
 ########################################################
-# Fichier :         camcam.py
-# Description :     Programme principal de la Cam-Cam.
+# Fichier :         moniteur.py
+# Description :     Programme du Moniteur Cam-Cam.
 # Auteurs :         Étienne Ménard, Isabelle Rioux
 # Création :        2022/04/13
 # Modification :    2022/04/13

@@ -10,8 +10,14 @@ Projet de fin de session du programme de Techniques de l'informatique du Cégep 
 
 &nbsp;
 
+## Documentation
+
+- [MQ-2 Gas Sensor](https://www.manualslib.com/manual/1813326/Adeept-Ultimate-Sensor-Kit-For-Raspberry-Pi.html?page=121#manual)
+- [Sound Sensor](https://www.manualslib.com/manual/1813326/Adeept-Ultimate-Sensor-Kit-For-Raspberry-Pi.html?page=125#manual)
+- [Vibration Switch](https://www.manualslib.com/manual/1813326/Adeept-Ultimate-Sensor-Kit-For-Raspberry-Pi.html?page=55#manual)
+
+&nbsp;
+
 ## Auteurs
 - Étienne Ménard
 - Isabelle Rioux
-
-&nbsp;
