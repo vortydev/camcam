@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ########################################################
 # Fichier :         moniteur.py
 # Description :     Programme du Moniteur Cam-Cam.
@@ -37,6 +39,7 @@ pinFnSwitch = 13
 pwrSwitch = Switch()
 fnSwitch = Switch()
 
+# vibration sensor
 pinVibration = 27
 sensorVibration = Switch()
 
@@ -107,8 +110,15 @@ def loop():
         if (GPIO.event_detected(pinFnSwitch)):
             print("fn switch detected")
 
+        # read gas sensor value from adc
         gasVal = adc.analogRead(0)
-        print("gas value: {}".format(gasVal))
+        concentration = gasVal
+        # print("analog value: %03d  Gas concentration: %d"%(gasVal, concentration))
+
+        # read microphone value from adc
+        micVal = adc.analogRead(1)
+        volume = 255 - micVal
+        # print("analog value: %03d  volume: %d"%(micVal, volume))
 
         sleep(0.1)
 
