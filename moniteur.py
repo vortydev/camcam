@@ -16,7 +16,6 @@ import RPi.GPIO as GPIO
 
 from scripts.LED import LED
 from scripts.switch import Switch
-from scripts.vibration import Vibration
 
 #####################
 #     VARIABLES     #
@@ -34,8 +33,8 @@ pinFnSwitch = 13
 pwrSwitch = Switch()
 fnSwitch = Switch()
 
-pinVibration = 18   # temp
-sensorVibration = Vibration()
+pinVibration = 18
+sensorVibration = Switch()
 
 
 #####################
@@ -61,7 +60,7 @@ def setup():
 
     # init vibration sensor
     global sensorVibration
-    sensorVibration = Vibration(pinVibration)
+    sensorVibration = Switch(pinVibration)
 
     # init microphone
     # init humidity sensor
