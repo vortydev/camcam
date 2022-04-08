@@ -13,6 +13,8 @@
 ########################
 
 from time import sleep
+from datetime import datetime
+from datetime import timedelta
 
 import RPi.GPIO as GPIO
 
@@ -48,12 +50,13 @@ sensorVibration = Switch()
 pinDHT = 25
 dht = DHT.DHT(0)
 
+# MONITEUR
+ONLINE = False
+timestamp = 0
 
 #####################
 #     FONCTIONS     #
 #####################
-
-
 
 # initialisation
 def setup():
@@ -84,7 +87,7 @@ def setup():
     global fnSwitch
     pwrSwitch = Switch(pinPwrSwitch)
     fnSwitch = Switch(pinFnSwitch)
-    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING, callback=callback_pwrSwitch)
+    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING)
     GPIO.add_event_detect(pinFnSwitch, GPIO.FALLING)
 
     # init vibration sensor
@@ -96,18 +99,42 @@ def setup():
     global dht
     dht = DHT.DHT(pinDHT)
 
-def callback_pwrSwitch(channel):
-    print("pwr button clicked")
-    global gLED
+    # time
+    global timestamp
+    timestamp = datetime.now()
+
+def powerButton():
+    global timestamp
+    trigger = timestamp + timedelta(seconds=3)
+    now = datetime.now()
+    if (trigger < now):
+        if (ONLINE):
+            systemOffline()
+        else:
+            systemOnline()
+        
+        timestamp = datetime.now()
+
+def systemOnline():
+    print("\n!\tSYSTEM: ONLINE")
+    global ONLINE
+    ONLINE = True
     rLED.turnOn()
-    sleep(0.5)
+
+def systemOffline():
+    print("\n!\tSYSTEM: OFFLINE")
+    global ONLINE
+    ONLINE = False
     rLED.turnOff()
 
-def callback_fnSwitch(channel):
-    print("fn button clicked")
+# def callback_pwrSwitch(channel):
+    # print("pwr button clicked")    
 
-def callback_vibration(channel):
-    print("vibration switch triggered")
+# def callback_fnSwitch(channel):
+    # print("fn button clicked")
+
+# def callback_vibration(channel):
+    # print("vibration switch triggered")
 
 # read gas sensor value from adc
 def routineGas():
@@ -132,21 +159,42 @@ def routineDHT():
 # main program loop
 def loop():
     while (True):
-        if (GPIO.event_detected(pinVibration)):
-            print("vibration detected")
-
+        # update timestamp on btn click
         if (GPIO.event_detected(pinPwrSwitch)):
-            print("pwr switch detected")
+                global timestamp
+                timestamp = datetime.now()
 
-        if (GPIO.event_detected(pinFnSwitch)):
-            print("fn switch detected")
+        # power on and off
+        if (GPIO.input(pinPwrSwitch) == 0):
+            powerButton()
 
-        
-        routineGas()
+        if (ONLINE):
+            
+                # print(timestamp)
 
-        routineMic()
-        
-        routineDHT()
+            
+
+            # elif (GPIO.input(pinPwrSwitch) == 1):
+            #     global timer
+            #     timer = 0
+
+            
+
+            # if (GPIO.event_detected(pinFnSwitch)):
+            #     print("fn switch detected")
+
+            # vibration
+            if (GPIO.event_detected(pinVibration)):
+                print("vibration detected")
+            
+            # gas
+            routineGas()
+
+            # microphone
+            routineMic()
+            
+            # DHT
+            routineDHT()
 
         sleep(0.1)
 
