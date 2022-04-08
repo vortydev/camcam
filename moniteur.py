@@ -19,6 +19,7 @@ import RPi.GPIO as GPIO
 from scripts.ADCDevice import *
 from scripts.LED import LED
 from scripts.switch import Switch
+import scripts.Freenove_DHT as DHT
 
 #####################
 #     VARIABLES     #
@@ -30,8 +31,8 @@ adc = ADCDevice()
 # LEDs
 pinGreenLED = 5
 pinRedLED = 6
-gLED = LED()
-rLED = LED()
+gLED = LED()    # data LED
+rLED = LED()    # pwr LED
 
 # switches
 pinPwrSwitch = 19
@@ -43,10 +44,16 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
+# dht object
+pinDHT = 25
+dht = DHT.DHT(0)
+
 
 #####################
 #     FONCTIONS     #
 #####################
+
+
 
 # initialisation
 def setup():
@@ -77,7 +84,7 @@ def setup():
     global fnSwitch
     pwrSwitch = Switch(pinPwrSwitch)
     fnSwitch = Switch(pinFnSwitch)
-    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING)
+    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING, callback=callback_pwrSwitch)
     GPIO.add_event_detect(pinFnSwitch, GPIO.FALLING)
 
     # init vibration sensor
@@ -85,18 +92,42 @@ def setup():
     sensorVibration = Switch(pinVibration)
     GPIO.add_event_detect(sensorVibration.pin.pinNb, GPIO.FALLING)
 
-    # init microphone
     # init humidity sensor
-    # init gas sensor
+    global dht
+    dht = DHT.DHT(pinDHT)
 
-# def callback_pwrSwitch(channel):
-#     print("pwr button clicked")
+def callback_pwrSwitch(channel):
+    print("pwr button clicked")
+    global gLED
+    rLED.turnOn()
+    sleep(0.5)
+    rLED.turnOff()
 
-# def callback_fnSwitch(channel):
-#     print("fn button clicked")
+def callback_fnSwitch(channel):
+    print("fn button clicked")
 
-# def callback_vibration(channel):
-#     print("vibration switch triggered")
+def callback_vibration(channel):
+    print("vibration switch triggered")
+
+# read gas sensor value from adc
+def routineGas():
+    gasVal = adc.analogRead(0)
+    concentration = gasVal
+    # print("analog value: %03d  Gas concentration: %d\n"%(gasVal, concentration))
+
+# read microphone value from adc
+def routineMic():
+    micVal = adc.analogRead(1)
+    volume = 255 - micVal
+    # print("analog value: %03d  volume: %d\n"%(micVal, volume))
+
+# read values from DHT
+def routineDHT():
+    chk = dht.readDHT11()     #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
+    # if (chk is dht.DHTLIB_OK):      #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
+        # print("DHT11,OK!")
+
+    # print("Humidity : %.2f\nTemperature : %.2f \n"%(dht.humidity,dht.temperature))
 
 # main program loop
 def loop():
@@ -110,15 +141,12 @@ def loop():
         if (GPIO.event_detected(pinFnSwitch)):
             print("fn switch detected")
 
-        # read gas sensor value from adc
-        gasVal = adc.analogRead(0)
-        concentration = gasVal
-        # print("analog value: %03d  Gas concentration: %d"%(gasVal, concentration))
+        
+        routineGas()
 
-        # read microphone value from adc
-        micVal = adc.analogRead(1)
-        volume = 255 - micVal
-        # print("analog value: %03d  volume: %d"%(micVal, volume))
+        routineMic()
+        
+        routineDHT()
 
         sleep(0.1)
 
