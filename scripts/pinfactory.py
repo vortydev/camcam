@@ -11,8 +11,8 @@ class Pin:
 
     # init pin
     def __init__(self, p = -1):
-        self.pinCheck(p)
         self.pin = p
+        self.pinCheck(p)
 
     # returns the pinNb
     def __repr__(self) -> int:
@@ -30,7 +30,7 @@ class Pin:
     pin = property(get_pin, set_pin)
 
     # stops the program if a pin is invalid
-    def pinCheck(pin):
-        if (pin < 0):
+    def pinCheck(self):
+        if (self.pin < 0):
             print("Pin initialisation failed.")
             exit(0)
