@@ -51,27 +51,48 @@ def setup():
     global rLED
     gLED = LED(pinGreenLED)
     rLED = LED(pinRedLED)
+    gLED.turnOff()
+    rLED.turnOff()
 
     # setup boutons
     global pwrSwitch
     global fnSwitch
     pwrSwitch = Switch(pinPwrSwitch)
     fnSwitch = Switch(pinFnSwitch)
+    GPIO.add_event_detect(pinPwrSwitch, GPIO.FALLING)
+    GPIO.add_event_detect(pinFnSwitch, GPIO.FALLING)
 
     # init vibration sensor
     global sensorVibration
     sensorVibration = Switch(pinVibration)
+    GPIO.add_event_detect(sensorVibration.pin.pinNb, GPIO.FALLING)
 
     # init microphone
     # init humidity sensor
     # init gas sensor
 
+# def callback_pwrSwitch(channel):
+#     print("pwr button clicked")
+
+# def callback_fnSwitch(channel):
+#     print("fn button clicked")
+
+# def callback_vibration(channel):
+#     print("vibration switch triggered")
+
 # main program loop
 def loop():
-    print("loop!\n")
+    while (True):
+        if (GPIO.event_detected(pinVibration)):
+            print("vibration detected")
 
-    if (GPIO.event_detected(pinVibration)):
-        print("vibration detected")
+        if (GPIO.event_detected(pinPwrSwitch)):
+            print("pwr switch detected")
+
+        if (GPIO.event_detected(pinFnSwitch)):
+            print("fn switch detected")
+
+        sleep(0.1)
 
 # cleanup sequence
 def destroy():
