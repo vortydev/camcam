@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 from scripts.pinfactory import Pin
 
 class LED:
-    pin = Pin()
+    pin = Pin(0)
 
     def __init__(self, pin = 0, mode = GPIO.BCM):
         if (pin > 0):
