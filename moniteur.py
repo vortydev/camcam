@@ -22,6 +22,9 @@ from scripts.switch import Switch
 #     VARIABLES     #
 #####################
 
+# adc object
+adc = ADCDevice()
+
 # LEDs
 pinGreenLED = 5
 pinRedLED = 6
