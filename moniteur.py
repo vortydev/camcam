@@ -14,7 +14,7 @@ from time import sleep
 
 import RPi.GPIO as GPIO
 
-import scripts.ADCDevice
+from scripts.ADCDevice import *
 from scripts.LED import LED
 from scripts.switch import Switch
 
