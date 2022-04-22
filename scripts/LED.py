@@ -16,13 +16,13 @@ class LED:
         if (pin > 0):
             self.pin = Pin(pin)
             GPIO.setmode(mode)
-            GPIO.setup(self.pin.pin, GPIO.OUT)
-            print ("initiliased LED with pin {}".format(pin))
+            GPIO.setup(self.pin.pinNb, GPIO.OUT)
+            print ("Initiliased LED with pin {}".format(pin))
 
     def turnOn(self):
-        GPIO.output(self.pin, GPIO.HIGH)
+        GPIO.output(self.pin.pinNb, GPIO.HIGH)
         print("LED on!")
 
     def turnOff(self):
-        GPIO.output(self.pin, GPIO.LOW)
+        GPIO.output(self.pin.pinNb, GPIO.LOW)
         print("LED off!")
