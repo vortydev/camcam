@@ -12,7 +12,7 @@ class Pin:
     # init pin
     def __init__(self, p = -1):
         self.pin = p
-        self.pinCheck(p)
+        self.pinCheck()
 
     # returns the pinNb
     def __repr__(self) -> int:
