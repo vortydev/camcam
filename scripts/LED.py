@@ -15,9 +15,9 @@ class LED:
     def __init__(self, pin = 0, mode = GPIO.BCM):
         if (pin > 0):
             self.pin = Pin(pin)
-            print (self.pin)
             GPIO.setmode(mode)
             GPIO.setup(self.pin, GPIO.OUT)
+            print ("initiliased LED with pin {}".format(self.pin))
 
     def turnOn(self):
         GPIO.output(self.pin, GPIO.HIGH)
