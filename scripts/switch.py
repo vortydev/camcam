@@ -7,7 +7,7 @@
 ########################################################
 
 import RPi.GPIO as GPIO
-from pinfactory import Pin
+from scripts.pinfactory import Pin
 
 class Switch:
     pin = Pin()
