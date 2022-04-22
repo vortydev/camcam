@@ -14,6 +14,7 @@ from time import sleep
 
 import RPi.GPIO as GPIO
 
+import scripts.ADCDevice
 from scripts.LED import LED
 from scripts.switch import Switch
 
@@ -44,6 +45,17 @@ sensorVibration = Switch()
 # initialisation
 def setup():
     print("setting up...\n")
+
+    # init adc
+    global adc
+    if (adc.detectI2C(0x4b)):
+        adc = ADS7830()
+    elif (adc.detectI2C(0x48)):
+        adc = PCF8591()
+    else:
+        print("No correct I2C address found.")
+        exit(-1)
+
     GPIO.setmode(GPIO.BCM)
     
     # setup LEDs
@@ -92,11 +104,15 @@ def loop():
         if (GPIO.event_detected(pinFnSwitch)):
             print("fn switch detected")
 
+        gasVal = adc.analogRead(0)
+        print("gas value: {}".format(gasVal))
+
         sleep(0.1)
 
 # cleanup sequence
 def destroy():
     print("destroying!\n")
+    adc.close()
     GPIO.cleanup()
 
 # main
