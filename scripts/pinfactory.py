@@ -17,6 +17,9 @@ class Pin:
     def __repr__(self) -> int:
         return int(self.pin)
 
+    def __str__(self) -> int:
+        return int(self.pin)
+
     # set the pin
     def set_pin(self, p):
         self.pinCheck(p)
