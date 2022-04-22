@@ -13,21 +13,26 @@
 from time import sleep
 
 import RPi.GPIO as GPIO
+
+from scripts.LED import LED
+from scripts.switch import Switch
 from scripts.vibration import Vibration
-
-
 
 #####################
 #     VARIABLES     #
 #####################
 
+# LEDs
 pinGreenLED = 19
 pinRedLED = 26
-# TODO LED object
+gLED = LED()
+rLED = LED()
 
+# switches
 pinPwrSwitch = 6
 pinFnSwitch = 13
-# TODO switch object
+pwrSwitch = Switch()
+fnSwitch = Switch()
 
 pinVibration = 18   # temp
 sensorVibration = Vibration()
@@ -43,7 +48,16 @@ def setup():
     GPIO.setmode(GPIO.BCM)
     
     # setup LEDs
+    global gLED
+    global rLED
+    gLED = LED(pinGreenLED)
+    rLED = LED(pinRedLED)
+
     # setup boutons
+    global pwrSwitch
+    global fnSwitch
+    pwrSwitch = Switch(pinPwrSwitch)
+    fnSwitch = Switch(pinFnSwitch)
 
     # init vibration sensor
     global sensorVibration
