@@ -8,6 +8,7 @@
 
 import RPi.GPIO as GPIO
 from scripts.pinfactory import Pin
+from time import sleep
 
 class LED:
     pin = Pin(0)
@@ -19,10 +20,17 @@ class LED:
             GPIO.setup(self.pin.pinNb, GPIO.OUT)
             print ("Initiliased LED with pin {}".format(pin))
 
-    def turnOn(self):
+    def turnOn(self, debug = False):
         GPIO.output(self.pin.pinNb, GPIO.HIGH)
-        print("LED on!")
+        if (debug):
+            print("LED on!")
 
-    def turnOff(self):
+    def turnOff(self, debug = False):
         GPIO.output(self.pin.pinNb, GPIO.LOW)
-        print("LED off!")
+        if (debug):
+            print("LED off!")
+
+    def blinkOnce(self, debug = False):
+        self.turnOn(debug)
+        sleep(0.2)
+        self.turnOff(debug)

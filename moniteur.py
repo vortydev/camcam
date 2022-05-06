@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ########################################################
 # Fichier :         moniteur.py
 # Description :     Programme du Moniteur Cam-Cam.
@@ -11,6 +13,8 @@
 ########################
 
 from time import sleep
+from datetime import datetime
+from datetime import timedelta
 
 import RPi.GPIO as GPIO
 
@@ -22,6 +26,7 @@ from scripts.switch import Switch
 from client import MQTTClient
 #ask for broker ip address?
 #should have launched the broker on client side
+import scripts.Freenove_DHT as DHT
 
 #####################
 #     VARIABLES     #
@@ -33,8 +38,8 @@ adc = ADCDevice()
 # LEDs
 pinGreenLED = 5
 pinRedLED = 6
-gLED = LED()
-rLED = LED()
+gLED = LED()    # data LED
+rLED = LED()    # pwr LED
 
 # switches
 pinPwrSwitch = 19
@@ -42,12 +47,20 @@ pinFnSwitch = 13
 pwrSwitch = Switch()
 fnSwitch = Switch()
 
+# vibration sensor
 pinVibration = 27
 sensorVibration = Switch()
 
 mqttClient = MQTTClient("localhost",1883,"Client001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
 
 threadLoop = None
+# dht object
+pinDHT = 25
+dht = DHT.DHT(0)
+
+# MONITEUR
+ONLINE = False
+timestamp = 0
 
 #####################
 #     FONCTIONS     #
@@ -90,35 +103,108 @@ def setup():
     sensorVibration = Switch(pinVibration)
     GPIO.add_event_detect(sensorVibration.pin.pinNb, GPIO.FALLING)
 
-    # init microphone
     # init humidity sensor
-    # init gas sensor
+    global dht
+    dht = DHT.DHT(pinDHT)
+
+    # time
+    global timestamp
+    timestamp = datetime.now()
+
+def powerButton():
+    global timestamp
+    trigger = timestamp + timedelta(seconds=3)
+    now = datetime.now()
+    if (trigger < now):
+        if (ONLINE):
+            systemOffline()
+        else:
+            systemOnline()
+        
+        timestamp = datetime.now()
+
+def systemOnline():
+    print("\n!\tSYSTEM: ONLINE")
+    global ONLINE
+    ONLINE = True
+    rLED.turnOn()
+
+def systemOffline():
+    print("\n!\tSYSTEM: OFFLINE")
+    global ONLINE
+    ONLINE = False
+    rLED.turnOff()
 
 # def callback_pwrSwitch(channel):
-#     print("pwr button clicked")
+    # print("pwr button clicked")    
 
 # def callback_fnSwitch(channel):
-#     print("fn button clicked")
+    # print("fn button clicked")
 
 # def callback_vibration(channel):
-#     print("vibration switch triggered")
+    # print("vibration switch triggered")
+
+# read gas sensor value from adc
+def routineGas():
+    gasVal = adc.analogRead(0)
+    concentration = gasVal
+    # print("analog value: %03d  Gas concentration: %d\n"%(gasVal, concentration))
+
+# read microphone value from adc
+def routineMic():
+    micVal = adc.analogRead(1)
+    volume = 255 - micVal
+    # print("analog value: %03d  volume: %d\n"%(micVal, volume))
+
+# read values from DHT
+def routineDHT():
+    chk = dht.readDHT11()     #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
+    # if (chk is dht.DHTLIB_OK):      #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
+        # print("DHT11,OK!")
+
+    # print("Humidity : %.2f\nTemperature : %.2f \n"%(dht.humidity,dht.temperature))
 
 # main program loop
 def loop():
     while (True):
-        if (GPIO.event_detected(pinVibration)):
-            print("vibration detected")
-            vibeJSON = {'vibe':'yes'}
-            mqttClient.publish(mqttClient.topicVibration,vibeJSON)
-
+        # update timestamp on btn click
         if (GPIO.event_detected(pinPwrSwitch)):
-            print("pwr switch detected")
+                global timestamp
+                timestamp = datetime.now()
 
-        if (GPIO.event_detected(pinFnSwitch)):
-            print("fn switch detected")
+        # power on and off
+        if (GPIO.input(pinPwrSwitch) == 0):
+            powerButton()
 
-        gasVal = adc.analogRead(0)
-        print("gas value: {}".format(gasVal))
+        if (ONLINE):
+            
+                # print(timestamp)
+
+            
+
+            # elif (GPIO.input(pinPwrSwitch) == 1):
+            #     global timer
+            #     timer = 0
+
+            
+
+            # if (GPIO.event_detected(pinFnSwitch)):
+            #     print("fn switch detected")
+
+            # vibration
+            if (GPIO.event_detected(pinVibration)):
+                print("vibration detected")
+                vibeJSON = {'vibe':'yes'}
+                mqttClient.publish(mqttClient.topicVibration,vibeJSON)
+            
+            # gas
+            routineGas()
+
+            # microphone
+            routineMic()
+            
+            # DHT
+            routineDHT()
 
         sleep(0.1)
 
