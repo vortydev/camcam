@@ -13,7 +13,7 @@ import signal
 import paho.mqtt.client as mqtt
 
 class MQTTClient:
-    __brokerHost = "localhost"
+    __brokerHost = "localhost"  # curl ifconfig.me to get public ip address
     __brokerPort = 1883
     __idClient = "Client001"
     __client = None
@@ -35,7 +35,7 @@ class MQTTClient:
         self.__topicGaz = topicGaz
         self.__topicTemperature = topicTemperature
 
-        init_mqtt(self)
+        self.init_mqtt()
 
     # brokerHost
     def set_brokerHost(self, host):
@@ -63,6 +63,15 @@ class MQTTClient:
         return self.__idClient
 
     idClient = property(get_idClient, set_idClient)
+
+    # client
+    def set_client(self, client):
+        self.__client = client
+
+    def get_client(self):
+        return self.__client
+
+    client = property(get_client, set_client)
 
     # topicSystem
     def set_topicSystem(self, topicSystem):
@@ -118,20 +127,20 @@ class MQTTClient:
     
     topicTemperature = property(get_topicTemperature, set_topicTemperature)
 
-    def on_connect(client, user_data, flags, connection_result_code):
+    def on_connect(self, client, user_data, flags, connection_result_code):
         if connection_result_code == 0:
             print("Connected to MQTT Broker")
         else:
             print("Failed to connect to MQTT Broker: " + mqtt.connack_string(connection_result_code))
 
-        client.subscribe(self.topicSystem, qos=2)
-        client.subscribe(self.topicSensor, qos=2)
-        client.subscribe(self.topicVibration, qos=2)
-        client.subscribe(self.topicMicrophone, qos=2)
-        client.subscribe(self.topicGaz, qos=2)
-        client.subscribe(self.topicTemperature, qos=2)
+        self.client.subscribe(self.topicSystem, qos=2)
+        self.client.subscribe(self.topicSensor, qos=2)
+        self.client.subscribe(self.topicVibration, qos=2)
+        self.client.subscribe(self.topicMicrophone, qos=2)
+        self.client.subscribe(self.topicGaz, qos=2)
+        self.client.subscribe(self.topicTemperature, qos=2)
 
-    def on_disconnect(client, user_data, disconnection_result_code):
+    def on_disconnect(self, client, user_data, disconnection_result_code):
         print("Disconnected from MQTT broker")
 
     def on_message(self, client, user_data, msg):
@@ -157,15 +166,15 @@ class MQTTClient:
         else:
             print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
 
-    def signal_handler(sig, frame):
+    def signal_handler(self, sig, frame):
         print("You pressed Control + C. Shutting down, please wait...")
 
-        client.disconnect()
+        self.client.disconnect()
         sys.exit(0)
 
     def init_mqtt(self):
         global client
-        client = mqtt.Client(
+        self.client = mqtt.Client(
             client_id = self.idClient,
             clean_session = False
         )
@@ -174,9 +183,19 @@ class MQTTClient:
         # client.enable_logger()
 
         # Setup callbacks
-        client.on_connect = on_connect
-        client.on_disconnect = on_disconnect
-        client.on_message = on_message
+        self.client.on_connect = self.on_connect
+        self.client.on_disconnect = self.on_disconnect
+        self.client.on_message = self.on_message
 
         # Connect to Broker.
-        client.connect(self.brokerHost, self.brokerHost)
+        self.client.connect(self.brokerHost, self.brokerPort)
+
+    def startMQTT(self):
+        signal.signal(signal.SIGINT, self.signal_handler)
+        print("Listening for messages on topic '" + self.topicSystem + "'. Press Control + C to exit.")
+        self.client.loop_start()
+        signal.pause()
+
+    def publish(self, topic, msg):
+        self.client.publish(topic,json.dumps(msg),1)
+

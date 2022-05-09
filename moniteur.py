@@ -19,9 +19,14 @@ import math
 
 import RPi.GPIO as GPIO
 
+import threading
+
 from scripts.ADCDevice import *
 from scripts.LED import LED
 from scripts.switch import Switch
+from client import MQTTClient
+#ask for broker ip address?
+#should have launched the broker on client side
 import scripts.Freenove_DHT as DHT
 
 #####################
@@ -47,6 +52,9 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
+mqttClient = MQTTClient("localhost",1883,"Client001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
+
+threadLoop = None
 # dht object
 pinDHT = 25
 dht = DHT.DHT(0)
@@ -255,6 +263,8 @@ def loop():
             # vibration
             if (GPIO.event_detected(pinVibration)):
                 print("vibration detected")
+                vibeJSON = {'vibe':'yes'}
+                mqttClient.publish(mqttClient.topicVibration,vibeJSON)
             
             # gas
             routineGas()
@@ -268,6 +278,9 @@ def loop():
             # MQTT stuff
 
         sleep(0.1)
+
+def thread_loop(name):
+    loop()
 
 # cleanup sequence
 def destroy():
