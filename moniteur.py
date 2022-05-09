@@ -155,10 +155,6 @@ def resetButton():
             systemReset()
             timestamp = datetime.now()
 
-def resetButton():
-    global timestamp
-    trigger = timestamp + timedelta(seconds=3)
-
 def systemOnline():
     print("\n!\tSYSTEM ONLINE\t!")
     global ONLINE
@@ -267,16 +263,13 @@ def loop():
                 mqttClient.publish(mqttClient.topicVibration,vibeJSON)
             
             # gas
-            routineGas()
+            mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
 
             # microphone
-            routineMic()
+            mqttClient.publish(mqttClient.topicMicrophone, {'gaz':routineMic()})
             
             # DHT
-            routineDHT()
-
-            # MQTT stuff
-
+            mqttClient.publish(mqttClient.topicTemperature, {'temperature':routineDHT()[1]})
         sleep(0.1)
 
 def thread_loop(name):
