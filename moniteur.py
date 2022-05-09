@@ -15,6 +15,7 @@
 from time import sleep
 from datetime import datetime
 from datetime import timedelta
+import math
 
 import RPi.GPIO as GPIO
 
@@ -60,7 +61,7 @@ timestamp = 0
 
 # initialisation
 def setup():
-    print("setting up...\n")
+    print("\n!\tSYSTEM INITIALISATION\t!")
 
     # init adc
     global adc
@@ -103,29 +104,103 @@ def setup():
     global timestamp
     timestamp = datetime.now()
 
+def datetime2float(date):
+    epoch = datetime.utcfromtimestamp(0)
+    seconds =  (date - epoch).total_seconds()
+    return seconds
+
+def float2datetime(fl):
+    return datetime.fromtimestamp(fl)
+
 def powerButton():
     global timestamp
     trigger = timestamp + timedelta(seconds=3)
     now = datetime.now()
-    if (trigger < now):
+
+    if (now < trigger):
         if (ONLINE):
             systemOffline()
         else:
             systemOnline()
-        
+
         timestamp = datetime.now()
 
+def resetButton():
+    global timestamp
+    trigger = timestamp + timedelta(seconds=5)
+    now = datetime.now()
+    flNow = datetime2float(now)
+    
+    if (now > timestamp + timedelta(seconds=2)):
+        if (flNow <= math.floor(flNow)+0.5):
+            gLED.turnOn()
+        else:
+            gLED.turnOff()
+
+    if (now < trigger):
+        if (ONLINE):
+            for i in range(0, 5):
+                gLED.turnOn()
+                sleep(0.1)
+                gLED.turnOff()
+                sleep(0.1)
+            systemReset()
+            timestamp = datetime.now()
+
+def resetButton():
+    global timestamp
+    trigger = timestamp + timedelta(seconds=3)
+
 def systemOnline():
-    print("\n!\tSYSTEM: ONLINE")
+    print("\n!\tSYSTEM ONLINE\t!")
     global ONLINE
     ONLINE = True
     rLED.turnOn()
 
 def systemOffline():
-    print("\n!\tSYSTEM: OFFLINE")
+    print("\n!\tSYSTEM OFFLINE\t!")
     global ONLINE
     ONLINE = False
     rLED.turnOff()
+
+def systemReset():
+    print("\n!\tSYSTEM RESET\t!")
+
+    # init adc
+    global adc
+    if (adc.detectI2C(0x4b)):
+        adc = ADS7830()
+    elif (adc.detectI2C(0x48)):
+        adc = PCF8591()
+    else:
+        print("No correct I2C address found.")
+        exit(-1)
+    
+    # setup LEDs
+    global gLED
+    global rLED
+    gLED = LED(pinGreenLED)
+    rLED = LED(pinRedLED)
+    gLED.turnOff()
+    rLED.turnOff()
+
+    # setup boutons
+    global pwrSwitch
+    global fnSwitch
+    pwrSwitch = Switch(pinPwrSwitch)
+    fnSwitch = Switch(pinFnSwitch)
+
+    # init vibration sensor
+    global sensorVibration
+    sensorVibration = Switch(pinVibration)
+
+    # init humidity sensor
+    global dht
+    dht = DHT.DHT(pinDHT)
+
+    # time
+    global timestamp
+    timestamp = datetime.now()
 
 # def callback_pwrSwitch(channel):
     # print("pwr button clicked")    
@@ -140,49 +215,43 @@ def systemOffline():
 def routineGas():
     gasVal = adc.analogRead(0)
     concentration = gasVal
+    return gasVal
     # print("analog value: %03d  Gas concentration: %d\n"%(gasVal, concentration))
 
 # read microphone value from adc
 def routineMic():
     micVal = adc.analogRead(1)
     volume = 255 - micVal
+    return volume
     # print("analog value: %03d  volume: %d\n"%(micVal, volume))
 
 # read values from DHT
 def routineDHT():
     chk = dht.readDHT11()     #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
-    # if (chk is dht.DHTLIB_OK):      #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
+    # if (chk == dht.DHTLIB_OK):      #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
         # print("DHT11,OK!")
+
+    # dht.humidity
+    # dht.temperature
+    return ({dht.humidity, dht.temperature})
 
     # print("Humidity : %.2f\nTemperature : %.2f \n"%(dht.humidity,dht.temperature))
 
 # main program loop
 def loop():
+    global timestamp
     while (True):
         # update timestamp on btn click
-        if (GPIO.event_detected(pinPwrSwitch)):
-                global timestamp
-                timestamp = datetime.now()
+        if (GPIO.event_detected(pinPwrSwitch)):    
+            timestamp = datetime.now()
+        elif (GPIO.event_detected(pinFnSwitch)):
+            timestamp = datetime.now()
 
         # power on and off
         if (GPIO.input(pinPwrSwitch) == 0):
             powerButton()
 
         if (ONLINE):
-            
-                # print(timestamp)
-
-            
-
-            # elif (GPIO.input(pinPwrSwitch) == 1):
-            #     global timer
-            #     timer = 0
-
-            
-
-            # if (GPIO.event_detected(pinFnSwitch)):
-            #     print("fn switch detected")
-
             # vibration
             if (GPIO.event_detected(pinVibration)):
                 print("vibration detected")
@@ -196,11 +265,13 @@ def loop():
             # DHT
             routineDHT()
 
+            # MQTT stuff
+
         sleep(0.1)
 
 # cleanup sequence
 def destroy():
-    print("destroying!\n")
+    print("\n!\tSYSTEM CLEANUP\t!")
     adc.close()
     GPIO.cleanup()
 
