@@ -3,6 +3,10 @@
 <html lang="en">
 <head>
     <title>Cam Cam</title>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <script src="./jquery.min.js"></script>
     <script src="./paho-mqtt.js"></script>                                                   <!-- (1) -->
     <script type="text/javascript" charset="utf-8">
@@ -21,8 +25,9 @@
 
         // Callback when client has connected to Broker.
         onConnectionSuccess = function(data) {                                                 // (5)
-            console.log("Connected to MQTT Broker");
-            $("#connected").html("Yes");
+            console.log("Connecté.e au Broker MQTT");
+            $("#connected").html("Oui");
+            //$("input[type=range].brightnessLevel").attr("disabled", null);
 
             // Receive LED level messages.                                                     // (6)
             client.subscribe(TOPICSYSTEM);
@@ -82,18 +87,33 @@
     </script>
 </head>
 <body>
-    <h1>Cam Cam, la caméra à Camille!</h1>
-    CLIENT_ID: <span id="clientId">No</span>
-    <br><br>
-    Connected to MQTT Broker: <span id="connected">No</span>
-    <br><br>
-    Système: <span id="system"></span><br>
-    Sensor: <span id="sensor"></span><br>
-    Vibration: <span id="vibration"></span><br>
-    Microphone: <span id="microphone"></span><br>
-    Gaz: <span id="gaz"></span><br>
-    Humidité: <span id="humidite"></span><br>
-    Température: <span id="temperature"></span><br>
+    <header>
+        <h1 class="pageTitle">Cam Cam</h1>
+    </header>
+
+    <main>
+        <h2 class="sectionTitle">État</h2>
+        <section class="border mqttStatus">
+            <p>ID client: <span id="clientId">NaN</span></p>
+            <p>Connecté.e au Broker MQTT: <span id="connected">Non</span></p>
+        </section>
+
+        <h2 class="sectionTitle">Capteurs</h2>
+        <section class="border capteurs">
+            <div class="flexCapteur"><p>Système:</p><span id="system">NaN</span></div>
+            <div class="flexCapteur"><p>Sensor:</p><span id="sensor">NaN</span></div>
+            <div class="flexCapteur"><p>Vibration:</p><span id="vibration">NaN</span></div>
+            <div class="flexCapteur"><p>Microphone:</p><span id="microphone">NaN</span></div>
+            <div class="flexCapteur"><p>Gaz:</p><span id="gaz">NaN</span></div>
+            <div class="flexCapteur"><p>Humidité:</p><span id="humidite">NaN</span></div>
+            <div class="flexCapteur"><p>Température:</p><span id="temperature">NaN</span></div>
+        </section>
+    </main>
     
+    <footer>
+        <div class="credits">
+            <p>Cam Cam 2022 © Étienne Ménard, Isabelle Rioux</p>
+        </div>
+    </footer>
 </body>
 </html>
