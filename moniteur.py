@@ -171,6 +171,7 @@ def systemOffline():
 
 def systemReset():
     print("\n!\tSYSTEM RESET\t!")
+    systemOffline()
 
     # init adc
     global adc
@@ -207,6 +208,8 @@ def systemReset():
     # time
     global timestamp
     timestamp = datetime.now()
+
+    systemOnline()
 
 # def callback_pwrSwitch(channel):
     # print("pwr button clicked")    
