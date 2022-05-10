@@ -3,7 +3,7 @@
 # Description :     Programme du Client Cam-Cam.
 # Auteurs :         Étienne Ménard, Isabelle Rioux
 # Création :        2022/04/13
-# Modification :    2022/05/09
+# Modification :    2022/05/10
 ########################################################
 
 import json
@@ -156,9 +156,9 @@ class MQTTClient:
                 print("JSON Decode Error: " + msg.payload.decode("UTF-8"))
 
             if msg.topic == self.topicSystem:
-                print("Etat du systeme")
+                print("État du système")
             elif msg.topic == self.topicSensor:
-                print("Tout les sensor")
+                print("Tous les capteurs")
             elif msg.topic == self.topicVibration:
                 print("Vibration")
             elif msg.topic == self.topicMicrophone:
@@ -166,7 +166,7 @@ class MQTTClient:
             elif msg.topic == self.topicGaz:
                 print("Gaz")
             elif msg.topic == self.topicTemperature:
-                print("Temperature")
+                print("Température")
             else:
                 print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
 

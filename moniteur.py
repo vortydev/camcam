@@ -5,7 +5,7 @@
 # Description :     Programme du Moniteur Cam-Cam.
 # Auteurs :         Étienne Ménard, Isabelle Rioux
 # Création :        2022/04/13
-# Modification :    2022/05/09
+# Modification :    2022/05/10
 ########################################################
 
 ########################
@@ -52,13 +52,13 @@ fnSwitch = Switch()
 pinVibration = 27
 sensorVibration = Switch()
 
-# mqtt Client
-mqttClient = MQTTClient("localhost",1883,"Moniteur001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
-
-threadLoop = None
 # dht object
 pinDHT = 25
 dht = DHT.DHT(0)
+
+# mqtt Client
+mqttClient = MQTTClient("localhost",1883,"Moniteur001","system","sensor","sensor/vibration","sensor/microphone","sensor/gaz","sensor/temperature")
+threadLoop = None
 
 # MONITEUR
 ONLINE = False
@@ -118,14 +118,13 @@ def setup():
     global mqttTimer
     mqttTimer = datetime.now()
 
+# converts datetime to float
 def datetime2float(date):
     epoch = datetime.utcfromtimestamp(0)
     seconds =  (date - epoch).total_seconds()
     return seconds
 
-def float2datetime(fl):
-    return datetime.fromtimestamp(fl)
-
+# executed when the power button is held down
 def powerButton():
     global timestamp
     trigger = timestamp + timedelta(seconds=3)
@@ -139,6 +138,7 @@ def powerButton():
 
         timestamp = datetime.now()
 
+# executed when the reset button is held down
 def resetButton():
     global timestamp
     trigger = timestamp + timedelta(seconds=5)
@@ -161,6 +161,7 @@ def resetButton():
             systemReset()
             timestamp = datetime.now()
 
+# start monitoring and broadcasting
 def systemOnline():
     print("\n!\tSYSTEM ONLINE\t!")
     global ONLINE
@@ -168,6 +169,7 @@ def systemOnline():
     rLED.turnOn()
     mqttClient.publish(mqttClient.topicSystem,{'system':'ON'})
 
+# stop monitoring
 def systemOffline():
     print("\n!\tSYSTEM OFFLINE\t!")
     global ONLINE
@@ -175,6 +177,7 @@ def systemOffline():
     rLED.turnOff()
     mqttClient.publish(mqttClient.topicSystem,{'system':'OFF'})
 
+# reset GPIO components if they misbehave
 def systemReset():
     print("\n!\tSYSTEM RESET\t!")
     systemOffline()
@@ -242,14 +245,9 @@ def routineMic():
 
 # read values from DHT
 def routineDHT():
-    chk = dht.readDHT11()     #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
-    # if (chk == dht.DHTLIB_OK):      #read DHT11 and get a return value. Then determine whether data read is normal according to the return value.
-        # print("DHT11,OK!")
-
     # dht.humidity
     # dht.temperature
     return ({'humidity':dht.humidity, 'temperature':dht.temperature})
-
     # print("Humidity : %.2f\nTemperature : %.2f \n"%(dht.humidity,dht.temperature))
 
 # main program loop
@@ -263,13 +261,15 @@ def loop():
         elif (GPIO.event_detected(pinFnSwitch)):
             timestamp = datetime.now()
 
-        # power on and off
-        if (GPIO.input(pinPwrSwitch) == 0):
+        # power button held down
+        if (GPIO.input(pinPwrSwitch) == 0 and GPIO.input(pinFnSwitch) == 1):
             powerButton()
 
+        # reset button held down
         if (GPIO.input(pinFnSwitch) == 0 and GPIO.input(pinPwrSwitch) == 1):
             resetButton()
 
+        # when the system is online
         if (ONLINE):
             if (datetime.now() > mqttTimer + timedelta(seconds=10)):
                 # vibration
@@ -296,7 +296,7 @@ def thread_loop(name):
 # cleanup sequence
 def destroy():
     print("\n!\tSYSTEM CLEANUP\t!")
-    mqttClient.client.loop_stop()
+    mqttClient.stopMQTT()
     adc.close()
     GPIO.cleanup()
 
