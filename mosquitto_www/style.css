@@ -80,12 +80,12 @@ section p, .capteurs span {
 }
 
 .capteurs p {
-    width: 60%;
+    width: 50%;
     text-align: left;
 }
 
 .capteurs span {
-    width: 40%;
+    width: 50%;
     text-align: right;
 }
 
