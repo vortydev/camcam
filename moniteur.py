@@ -257,6 +257,9 @@ def loop():
         if (GPIO.input(pinPwrSwitch) == 0):
             powerButton()
 
+        if (GPIO.input(pinFnSwitch) == 0 and GPIO.input(pinPwrSwitch) == 1):
+            resetButton()
+
         if (ONLINE):
             # vibration
             if (GPIO.event_detected(pinVibration)):
