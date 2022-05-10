@@ -22,6 +22,8 @@ class MQTTClient:
     __topicMicrophone = "sensor/microphone"
     __topicGaz = "sensor/gaz"
     __topicTemperature = "sensor/temperature"
+    __system = None
+    __reset = False
 
     # init client
     def __init__(self, brokerHost, brokerPort, idClient, topicSystem, topicSensor, topicVibration, topicMicrophone, topicGaz, topicTemperature):
@@ -127,7 +129,24 @@ class MQTTClient:
     
     topicTemperature = property(get_topicTemperature, set_topicTemperature)
 
-    # when the client connects, do this
+    # system
+    def set_system(self, system):
+        self.__system = system
+
+    def get_system(self):
+        return self.__system
+
+    system = property(get_system, set_system)
+
+    # reset
+    def set_reset(self, reset):
+        self.__reset = reset
+
+    def get_reset(self):
+        return self.__reset
+
+    reset = property(get_reset, set_reset)
+
     def on_connect(self, client, user_data, flags, connection_result_code):
         if connection_result_code == 0:
             print("Connected to MQTT Broker")
@@ -147,13 +166,14 @@ class MQTTClient:
 
     # when the client receives a message, do this
     def on_message(self, client, user_data, msg):
-        if(self.idClient == "Client001"):
+        data = None
+        try:
+            data = json.loads(msg.payload.decode("UTF-8"))
+        except json.JSONDecodeError as e:
+            print("JSON Decode Error: " + msg.payload.decode("UTF-8"))
+
+        if(self.idClient == "Client001"): # ajouter if id moniteur
             print("Received message for topic {}: {}".format( msg.topic, msg.payload))
-            data = None
-            try:
-                data = json.loads(msg.payload.decode("UTF-8"))
-            except json.JSONDecodeError as e:
-                print("JSON Decode Error: " + msg.payload.decode("UTF-8"))
 
             if msg.topic == self.topicSystem:
                 print("État du système")
@@ -170,7 +190,17 @@ class MQTTClient:
             else:
                 print("Unhandled message topic {} with payload " + str(msg.topic, msg.payload))
 
-    # if ctrl + c is hit, do this
+        elif(self.idClient == "Moniteur001"):
+            if msg.topic == self.topicSystem:
+                if data['system'] == 'SETON':
+                    self.system = True
+                elif data['system'] == 'SETOFF':
+                    self.system = False
+                elif data['system'] == 'RESET':
+                    self.reset = True
+            elif msg.topic == self.topicSensor:
+                print("Tout les sensor")
+
     def signal_handler(self, sig, frame):
         print("You pressed Control + C. Shutting down, please wait...")
 
