@@ -65,6 +65,7 @@ section {
 .mqttStatus {
     text-align: center;
     width: fit-content;
+    margin-bottom: 10px;
 }
 
 section p, .capteurs span {
@@ -87,6 +88,29 @@ section p, .capteurs span {
 .capteurs span {
     width: 50%;
     text-align: right;
+}
+
+button {
+    display: inline-block;
+    background-color: var(--magenta);
+    color: white;
+    border: none;
+    transition: all 0.5s ease-in-out;
+    width: 100px;
+    height: 35px;
+    border-radius: 4px;
+    border: var(--magentaa) 2px solid;
+    margin: 0 5px 0 5px;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: var(--magentaa);
+}
+
+.flexBtn {
+    text-align: center;
+    width: fit-content;
 }
 
 footer {

@@ -143,6 +143,12 @@
             <p>Connecté.e au Broker MQTT: <span id="connected">Non</span></p>
         </section>
 
+        <section class="buttons flexBtn">
+            <button id="poweron" onclick="poweron()">ON</button>
+            <button id="poweroff" onclick="poweroff()">OFF</button>
+            <button id="reset" onclick="reset()">RESET</button>
+        </section>
+
         <h2 class="sectionTitle">Capteurs</h2>
         <section class="border capteurs">
             <div class="flexCapteur"><p>Système:</p><span id="system">NaN</span></div>
@@ -153,13 +159,6 @@
             <div class="flexCapteur"><p>Humidité:</p><span id="humidite">NaN</span></div>
             <div class="flexCapteur"><p>Température:</p><span id="temperature">NaN</span></div>
         </section>
-
-        <section class="buttons">
-            <button id="poweron" onclick="poweron()">ON</button>
-            <button id="poweroff" onclick="poweroff()">OFF</button>
-            <button id="reset" onclick="reset()">RESET</button>
-        </section>
-
     </main>
     
     <footer>
