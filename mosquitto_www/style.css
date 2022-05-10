@@ -1,0 +1,75 @@
+/* COLOR PALETTE */
+:root {
+    --charcoal: #292929;
+    --magentaa: #9a00c1;
+    --magenta: #bd00ec;
+}
+
+[class*="flex"] {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    flex-direction: row;
+}
+
+/* CSS RESET */
+body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    background-color: var(--charcoal);
+    font-family: 'Trebuchet MS', sans-serif;
+    font-size: large;
+    color: white;
+}
+
+p, h1, h2 {
+    margin: 0;
+    padding: 0;
+    color: white;
+}
+
+.pageTitle {
+    text-align: center;
+    background-color: var(--magenta);
+    margin: 0;
+    padding: 20px 0 20px 0;
+    margin-bottom: 50px;
+    font-size: 48px;
+}
+
+.sectionTitle {
+    text-align: center;
+    font-size: 32px;
+    margin: auto;
+    margin-bottom: 10px;
+}
+
+main {
+    width: 1000px;
+    margin: auto;
+}
+
+section {
+    margin: auto;
+    padding: 10px;
+    margin-bottom: 50px;
+}
+
+.border {
+    border: var(--magenta) 2px solid;
+    border-radius: 4px;
+}
+
+.mqttStatus {
+    text-align: center;
+    width: fit-content;
+}
+
+.mqttStatus p {
+    margin: 5px 0 5px 0;
+}
+
+footer {
+    text-align: center;
+}

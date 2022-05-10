@@ -3,6 +3,10 @@
 <html lang="en">
 <head>
     <title>Cam Cam</title>
+    <link rel="stylesheet" href="style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
     <script src="./jquery.min.js"></script>
     <script src="./paho-mqtt.js"></script>                                                   <!-- (1) -->
     <script type="text/javascript" charset="utf-8">
@@ -15,8 +19,8 @@
 
         // Callback when client has connected to Broker.
         onConnectionSuccess = function(data) {                                                 // (5)
-            console.log("Connected to MQTT Broker");
-            $("#connected").html("Yes");
+            console.log("Connecté.e au Broker MQTT");
+            $("#connected").html("Oui");
             //$("input[type=range].brightnessLevel").attr("disabled", null);
 
             // Receive LED level messages.                                                     // (6)
@@ -81,12 +85,27 @@
     </script>
 </head>
 <body>
-    <h1>Cam Cam, la caméra à Camille!</h1>
-    CLIENT_ID: <span id="clientId">No</span>
-    <br><br>
-    Connected to MQTT Broker: <span id="connected">No</span>
-    <br><br>
-    Microphone: <span id="microphone"></span><br>
+    <header>
+        <h1 class="pageTitle">Cam Cam</h1>
+    </header>
+
+    <main>
+        <h2 class="sectionTitle">État</h2>
+        <section class="border mqttStatus">
+            <p>ID client: <span id="clientId">No</span></p>
+            <p>Connecté.e au Broker MQTT: <span id="connected">Non</span></p>
+        </section>
+
+        <h2 class="sectionTitle">Capteurs</h2>
+        <section class="border capteurs">
+            <p>Microphone: <span id="microphone"></span></p>
+        </section>
+    </main>
     
+    <footer>
+        <div class="credits">
+            <p>Cam Cam 2022 © Étienne Ménard, Isabelle Rioux</p>
+        </div>
+    </footer>
 </body>
 </html>
