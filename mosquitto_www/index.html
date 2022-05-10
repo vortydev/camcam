@@ -25,14 +25,9 @@
 
         // Callback when client has connected to Broker.
         onConnectionSuccess = function(data) {                                                 // (5)
-<<<<<<< HEAD
             console.log("Connecté.e au Broker MQTT");
             $("#connected").html("Oui");
             //$("input[type=range].brightnessLevel").attr("disabled", null);
-=======
-            console.log("Connected to MQTT Broker");
-            $("#connected").html("Yes");
->>>>>>> mqtt
 
             // Receive LED level messages.                                                     // (6)
             client.subscribe(TOPICSYSTEM);
