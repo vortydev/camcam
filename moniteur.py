@@ -165,12 +165,14 @@ def systemOnline():
     global ONLINE
     ONLINE = True
     rLED.turnOn()
+    mqttClient.publish(mqttClient.topicSystem,{'system':'ON'})
 
 def systemOffline():
     print("\n!\tSYSTEM OFFLINE\t!")
     global ONLINE
     ONLINE = False
     rLED.turnOff()
+    mqttClient.publish(mqttClient.topicSystem,{'system':'OFF'})
 
 def systemReset():
     print("\n!\tSYSTEM RESET\t!")
