@@ -290,9 +290,6 @@ def loop():
 
         sleep(0.1)
 
-def thread_loop(name):
-    loop()
-
 # cleanup sequence
 def destroy():
     print("\n!\tSYSTEM CLEANUP\t!")
