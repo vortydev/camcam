@@ -62,6 +62,7 @@ dht = DHT.DHT(0)
 # MONITEUR
 ONLINE = False
 timestamp = 0
+mqttTimer = 0
 
 #####################
 #     FONCTIONS     #
@@ -113,6 +114,8 @@ def setup():
     timestamp = datetime.now()
 
     mqttClient.client.loop_start()
+    global mqttTimer
+    mqttTimer = datetime.now()
 
 def datetime2float(date):
     epoch = datetime.utcfromtimestamp(0)
@@ -249,6 +252,7 @@ def routineDHT():
 # main program loop
 def loop():
     global timestamp
+    global mqttTimer
     while (True):
         # update timestamp on btn click
         if (GPIO.event_detected(pinPwrSwitch)):    
@@ -270,14 +274,15 @@ def loop():
                 vibeJSON = {'vibe':'yes'}
                 mqttClient.publish(mqttClient.topicVibration,vibeJSON)
             
-            # gas
-            mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
-
-            # microphone
-            mqttClient.publish(mqttClient.topicMicrophone, {'mic':routineMic()})
-            
-            # DHT
-            mqttClient.publish(mqttClient.topicTemperature, routineDHT())
+            if (datetime.now() > mqttTimer + timedelta(seconds=30)):
+                # gas
+                mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
+                # microphone
+                mqttClient.publish(mqttClient.topicMicrophone, {'mic':routineMic()})
+                # DHT
+                mqttClient.publish(mqttClient.topicTemperature, routineDHT())
+                mqttTimer = datetime.now()
+                
         sleep(0.1)
 
 def thread_loop(name):
