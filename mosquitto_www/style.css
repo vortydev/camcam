@@ -1,6 +1,7 @@
 /* COLOR PALETTE */
 :root {
     --charcoal: #292929;
+    --charcola: #333333;
     --magentaa: #9a00c1;
     --magenta: #bd00ec;
 }
@@ -34,7 +35,7 @@ p, h1, h2 {
     background-color: var(--magenta);
     margin: 0;
     padding: 20px 0 20px 0;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
     font-size: 48px;
 }
 
@@ -53,7 +54,7 @@ main {
 section {
     margin: auto;
     padding: 10px;
-    margin-bottom: 50px;
+    margin-bottom: 40px;
 }
 
 .border {
@@ -66,10 +67,29 @@ section {
     width: fit-content;
 }
 
-.mqttStatus p {
+section p, .capteurs span {
     margin: 5px 0 5px 0;
+}
+
+.capteurs {
+    width: 30%;
+}
+
+.capteurs > div {
+    width: 100%;
+}
+
+.capteurs p {
+    width: 75%;
+    text-align: left;
+}
+
+.capteurs span {
+    width: 25%;
+    text-align: right;
 }
 
 footer {
     text-align: center;
+    margin-bottom: 10px;
 }
