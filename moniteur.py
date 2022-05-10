@@ -274,7 +274,7 @@ def loop():
                 vibeJSON = {'vibe':'yes'}
                 mqttClient.publish(mqttClient.topicVibration,vibeJSON)
             
-            if (datetime.now() > mqttTimer + timedelta(seconds=30)):
+            if (datetime.now() > mqttTimer + timedelta(seconds=10)):
                 # gas
                 mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
                 # microphone
@@ -282,7 +282,7 @@ def loop():
                 # DHT
                 mqttClient.publish(mqttClient.topicTemperature, routineDHT())
                 mqttTimer = datetime.now()
-                
+
         sleep(0.1)
 
 def thread_loop(name):
