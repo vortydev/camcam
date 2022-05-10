@@ -268,13 +268,15 @@ def loop():
             resetButton()
 
         if (ONLINE):
-            # vibration
-            if (GPIO.event_detected(pinVibration)):
-                print("vibration detected")
-                vibeJSON = {'vibe':'yes'}
-                mqttClient.publish(mqttClient.topicVibration,vibeJSON)
-            
             if (datetime.now() > mqttTimer + timedelta(seconds=10)):
+                # vibration
+                if (GPIO.event_detected(pinVibration)):
+                    print("vibration detected")
+                    vibeJSON = {'vibe':"Il y a du mouvement"}
+                    mqttClient.publish(mqttClient.topicVibration,vibeJSON)
+                else :
+                    vibeJSON = {'vibe':"Rien à signaler"}
+                    mqttClient.publish(mqttClient.topicVibration,vibeJSON)
                 # gas
                 mqttClient.publish(mqttClient.topicGaz, {'gaz':routineGas()})
                 # microphone
